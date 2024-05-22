@@ -5,17 +5,21 @@ import Web3 from "./web3";
 import lottery from "./lottery";
 
 const App = () => {
-  const [manager, setManager] = React.useState("");
+  const [state, setState] = React.useState({manager: '', players: [], balance: ''});
   useEffect(() => {
     async function fetchManager(){
       const manager = await lottery.methods.manager().call();
-      setManager(manager)
+      const players = await lottery.methods.getPlayers().call();
+      const balance = await Web3.eth.getBalance(lottery.options.address);
+      setState({manager, players, balance})
     }
     fetchManager()
   }, []);
   return (
       <div className="App">
-       {manager}
+       {state.manager}
+       there ar currently {state.players.length} people entered,
+       competing to win {Web3.utils.fromWei(state.balance, 'ether')} ether!
       </div>
     );
   }
